@@ -2,6 +2,9 @@
 #include "rtp-util.h"
 #include <string.h>
 #include <assert.h>
+//#include <stdio.h>
+//#include <iostream>
+//#include <memory>
 
 // RFC3550 RTP: A Transport Protocol for Real-Time Applications
 // 5.1 RTP Fixed Header Fields (p12)
@@ -20,6 +23,13 @@
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 */
 
+//void printBytesAsString(const void* data, int bytes) 
+//{
+//	char bytesArray[160];
+//	memcpy(bytesArray, data, bytes);
+//	pirntf("%s\n", bytesArray);
+//}
+
 int rtp_packet_deserialize(struct rtp_packet_t *pkt, const void* data, int bytes)
 {
 	uint32_t i, v;
@@ -30,6 +40,7 @@ int rtp_packet_deserialize(struct rtp_packet_t *pkt, const void* data, int bytes
 		return -1;
 	ptr = (const unsigned char *)data;
 	memset(pkt, 0, sizeof(struct rtp_packet_t));
+	//printBytesAsString(data, bytes);
 
 	// pkt header
 	v = nbo_r32(ptr);
@@ -42,7 +53,7 @@ int rtp_packet_deserialize(struct rtp_packet_t *pkt, const void* data, int bytes
 	pkt->rtp.seq = RTP_SEQ(v);
 	pkt->rtp.timestamp = nbo_r32(ptr + 4);
 	pkt->rtp.ssrc = nbo_r32(ptr + 8);
-	assert(RTP_VERSION == pkt->rtp.v);
+	//assert(RTP_VERSION == pkt->rtp.v);
 
 	hdrlen = RTP_FIXED_HEADER + pkt->rtp.cc * 4;
 	if (RTP_VERSION != pkt->rtp.v || bytes < hdrlen + (pkt->rtp.x ? 4 : 0) + (pkt->rtp.p ? 1 : 0))

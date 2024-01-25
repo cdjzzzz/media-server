@@ -9,6 +9,10 @@
 #include "sys/system.h"
 #include "cpm/unuse.h"
 #include "sdp.h"
+#include <Winsock2.h>
+#include <WS2tcpip.h>
+#include <ws2ipdef.h>
+//#include <chrono>
 
 //#define UDP_MULTICAST_ADDR "239.0.0.2"
 
@@ -163,8 +167,59 @@ static int onpause(void* param)
 	return 0;
 }
 
+int sendTimeSync(const char* host)
+{
+	// 初始化 Winsock
+	WSADATA wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+		printf("WSAStartup failed.\n");
+		return 1;
+	}
+
+	// 创建套接字
+	SOCKET clientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (clientSocket == INVALID_SOCKET) {
+		printf("Error creating socket: %d\n", WSAGetLastError());
+		WSACleanup();
+		return 1;
+	}
+
+	// 设置服务器地址结构
+	struct sockaddr_in serverAddr;
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_addr.s_addr = inet_addr(host); // 服务器的 IP 地址
+	serverAddr.sin_port = htons(13347); // 服务器的端口号
+
+	auto mod = LoadLibrary(L"Timeclient.dll");
+	typedef long long(*proxy_sendto)(SOCKET clientSocket, struct sockaddr_in serverAddr);
+	proxy_sendto func_proxy_sendto = NULL;
+	func_proxy_sendto = (proxy_sendto)GetProcAddress(mod, "proxy_sendto");
+
+	typedef long long(*proxy_recvfrom)(SOCKET clientSocket, struct sockaddr_in serverAddr, int flag);
+	proxy_recvfrom func_proxy_recvfrom = NULL;
+	func_proxy_recvfrom = (proxy_recvfrom)GetProcAddress(mod, "proxy_recvfrom");
+
+	int syncTime = 100;
+	while (--syncTime)
+	{
+		func_proxy_sendto(clientSocket, serverAddr);
+		func_proxy_recvfrom(clientSocket, serverAddr, 0);
+		//Sleep(100);
+	}
+
+	func_proxy_sendto(clientSocket, serverAddr);
+	func_proxy_recvfrom(clientSocket, serverAddr, 1);
+	// 关闭套接字
+	closesocket(clientSocket);
+	WSACleanup();
+
+	return 0;
+}
+
 void rtsp_client_test(const char* host, const char* file)
 {
+	sendTimeSync(host);
+
 	int r;
 	struct rtsp_client_test_t ctx;
 	struct rtsp_client_handler_t handler;
@@ -184,10 +239,10 @@ void rtsp_client_test(const char* host, const char* file)
 	snprintf(packet, sizeof(packet), "rtsp://%s/%s", host, file); // url
 
 	socket_init();
-	ctx.socket = socket_connect_host(host, 8554, 2000);
+	ctx.socket = socket_connect_host(host, 8557, 2000);
 	assert(socket_invalid != ctx.socket);
 	//ctx.rtsp = rtsp_client_create(NULL, NULL, &handler, &ctx);
-	ctx.rtsp = rtsp_client_create(packet, "username1", "password1", &handler, &ctx);
+	ctx.rtsp = rtsp_client_create(packet, NULL, NULL, &handler, &ctx);
 	assert(ctx.rtsp);
 	assert(0 == rtsp_client_describe(ctx.rtsp));
 

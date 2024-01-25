@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "librtsp", "librtsp\librtsp.vcxproj", "{C34CC56F-34FE-4D93-8582-5853B05442EA}"
 EndProject
@@ -40,6 +40,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "h265", "..\avcodec\h265\h265.vcxproj", "{4A2E513D-9808-44EC-8329-BCB439D5C00A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmkv", "libmkv\libmkv.vcxproj", "{B4A2626A-7375-4BF6-936B-0A17D18581C1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Timeclient", "Timeclient\Timeclient.vcxproj", "{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -197,6 +199,14 @@ Global
 		{B4A2626A-7375-4BF6-936B-0A17D18581C1}.Release|Win32.Build.0 = Release|Win32
 		{B4A2626A-7375-4BF6-936B-0A17D18581C1}.Release|x64.ActiveCfg = Release|x64
 		{B4A2626A-7375-4BF6-936B-0A17D18581C1}.Release|x64.Build.0 = Release|x64
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Debug|Win32.Build.0 = Debug|Win32
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Debug|x64.ActiveCfg = Debug|x64
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Debug|x64.Build.0 = Debug|x64
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Release|Win32.ActiveCfg = Release|Win32
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Release|Win32.Build.0 = Release|Win32
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Release|x64.ActiveCfg = Release|x64
+		{21F297F0-54B5-4CDB-B1AA-FC1D8AF50E0A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

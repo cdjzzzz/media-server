@@ -12,10 +12,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
+#include <time.h>
+#include <windows.h>
+#include <stdio.h>
 #if defined(OS_WINDOWS)
 #define strcasecmp _stricmp
 #endif
+
+typedef long long(*CalculateDelay)(long long);
+CalculateDelay g_func_CalculateDelay = NULL;
 
 struct rtp_context_t
 {
@@ -32,6 +37,14 @@ struct rtp_context_t
     struct rtp_demuxer_t* demuxer;
 };
 
+static void printBytesAsString(const void* data, int bytes) 
+{
+	char bytesArray[160];
+	memcpy(bytesArray, data, bytes);
+	printf("%s\n", bytesArray);
+}
+
+
 static int rtp_read(struct rtp_context_t* ctx, socket_t s)
 {
 	int r;
@@ -47,8 +60,23 @@ static int rtp_read(struct rtp_context_t* ctx, socket_t s)
 	assert(0 == socket_addr_compare((const struct sockaddr*) & ss, (const struct sockaddr*) & ctx->ss[0]));
 
 	n += r;
-	if(0 == i++ % 100)
+	if (0 == i++ % 100)
+	{
 		printf("packet: %d, seq: %u, size: %d/%d\n", i, ((uint8_t)ctx->rtp_buffer[2] << 8) | (uint8_t)ctx->rtp_buffer[3], r, n);
+		//printf("time: %s\n", ctx->rtp_buffer);
+		long long serverCount = atoll(ctx->rtp_buffer);
+		g_func_CalculateDelay(serverCount);
+#if 0
+		SYSTEMTIME currentTime;
+		GetLocalTime(&currentTime);
+		//ctx->rtp_buffer[80] = '\0';
+		printf("time: %02u:%02u:%02u %03u  server_timestamp ==> %s \n",			
+			currentTime.wHour, currentTime.wMinute, currentTime.wSecond,
+			currentTime.wMilliseconds, ctx->rtp_buffer);
+#endif
+		return 0;
+
+	}
 	
 	size[0] = r >> 8;
 	size[1] = r >> 0;
@@ -200,6 +228,10 @@ static int STDCALL rtp_worker(void* param)
 
 void rtp_receiver_test(socket_t rtp[2], const char* peer, int peerport[2], int payload, const char* encoding)
 {
+	auto mod = LoadLibrary(L"Timeclient.dll");
+	if (!mod) return;
+	g_func_CalculateDelay = (CalculateDelay)GetProcAddress(mod, "CalculateDelay");
+
 	size_t n;
 	pthread_t t;
 	struct rtp_context_t* ctx;

@@ -117,9 +117,6 @@
     <ClInclude Include="..\librtsp\source\utils\rtp-sender.h">
       <Filter>librtsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\librtsp\source\utils\rtsp-payloads.h">
-      <Filter>librtsp</Filter>
-    </ClInclude>
     <ClInclude Include="..\libmov\test\mov-file-buffer.h">
       <Filter>libmov</Filter>
     </ClInclude>
@@ -131,6 +128,9 @@
     </ClInclude>
     <ClInclude Include="..\librtsp\test\media\h265-file-source.h">
       <Filter>librtsp\media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\librtsp\source\utils\rtsp-payloads.h">
+      <Filter>librtsp\sdp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
